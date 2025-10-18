@@ -101,3 +101,13 @@ The services are configured with volume mounts for development, so changes to th
    touch Order/database/database.sqlite
    touch Payment/database/database.sqlite
    ```
+
+## RUN
+   ```bash
+   ./start.sh
+
+   curl http://localhost:8090/accounts/api/health
+   curl http://localhost:8090/orders/api/health
+   curl http://localhost:8090/payments/api/health
+   ```
+
