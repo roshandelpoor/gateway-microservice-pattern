@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+  account:
+    build:
+      context: ./Account
+      dockerfile: Dockerfile
+    container_name: gateway-account
+    ports:
+      - "8081:80"
+    environment:
+      - APP_NAME=Account
+      - APP_ENV=local
+      - APP_KEY=base64:p3aGCOM9+BEC49xBMFMUaH5qkQdSQobL3ocWwYsobaE=
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8081
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - CACHE_DRIVER=file
+      - QUEUE_CONNECTION=sync
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120
+    volumes:
+      - ./Account:/var/www/html
+      - account_storage:/var/www/html/storage
+    networks:
+      - gateway-network
+    depends_on:
+      - mysql
+
+  order:
+    build:
+      context: ./Order
+      dockerfile: Dockerfile
+    container_name: gateway-order
+    ports:
+      - "8082:80"
+    environment:
+      - APP_NAME=Order
+      - APP_ENV=local
+      - APP_KEY=base64:SMiqOgaCZXk4J8RxtD4OhLV+yT3WiMRedap7K8270CA=
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8082
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - CACHE_DRIVER=file
+      - QUEUE_CONNECTION=sync
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120
+    volumes:
+      - ./Order:/var/www/html
+      - order_storage:/var/www/html/storage
+    networks:
+      - gateway-network
+    depends_on:
+      - mysql
+
+  payment:
+    build:
+      context: ./Payment
+      dockerfile: Dockerfile
+    container_name: gateway-payment
+    ports:
+      - "8083:80"
+    environment:
+      - APP_NAME=Payment
+      - APP_ENV=local
+      - APP_KEY=base64:VwCDnB0/nPZB+PwIY4scJ+RupxxbGAvh0bNMF4puK48=
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8083
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - CACHE_DRIVER=file
+      - QUEUE_CONNECTION=sync
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120
+    volumes:
+      - ./Payment:/var/www/html
+      - payment_storage:/var/www/html/storage
+    networks:
+      - gateway-network
+    depends_on:
+      - mysql
+
+  gateway-octan-service:
+    build:
+      context: ./GatewayOctan
+      dockerfile: Dockerfile
+    container_name: gateway-octan-swoole
+    ports:
+      - "8090:80"
+    environment:
+      - APP_NAME=GateWayOctan
+      - APP_ENV=local
+      - APP_KEY=base64:VwCDnB0/nPZB+PwIY4scJ+RupxxbGAvh0bNMF4puK48=
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8090
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - CACHE_DRIVER=file
+      - QUEUE_CONNECTION=sync
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120
+    volumes:
+      - ./GatewayOctan:/var/www/html
+      - gateway_octan_storage:/var/www/html/storage
+    networks:
+      - gateway-network
+    depends_on:
+      - mysql
+
+  gateway-hyperf-service:
+    build:
+      context: ./GatewayHyperf
+      dockerfile: Dockerfile
+    container_name: gateway-hyperf-swoole
+    ports:
+      - "8089:8089"
+    environment:
+      - APP_NAME=Gateway-Hyperf
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - CONFIG_CENTER_ENABLE=false
+      - REDIS_HOST=redis
+    volumes:
+      - ./GatewayHyperf:/opt/www
+    networks:
+      - gateway-network
+    depends_on:
+      - mysql
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: gateway-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - gateway-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: gateway-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=gateway
+      - MYSQL_USER=gateway_user
+      - MYSQL_PASSWORD=gateway_password
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - gateway-network
+
+volumes:
+  account_storage:
+  order_storage:
+  payment_storage:
+  gateway_octan_storage:
+  mysql_data:
+
+networks:
+  gateway-network:
+    driver: bridge
