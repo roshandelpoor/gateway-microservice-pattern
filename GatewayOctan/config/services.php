@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'order_service' => [
+        'url' => env('ORDER_SERVICE_URL', 'http://order/'),
+    ],
+
+    'payment_service' => [
+        'url' => env('PAYMENT_SERVICE_URL', 'http://payment/'),
+    ],
+
+    'account_service' => [
+        'url' => env('ACCOUNT_SERVICE_URL', 'http://account/'),
+    ],
 ];

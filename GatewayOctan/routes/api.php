@@ -2,7 +2,19 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GatewayController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::match([
+    'get', 
+    'post', 
+    'put', 
+    'patch', 
+    'delete'
+], '/{service}/{path?}', [
+    GatewayController::class, 
+    'forward'
+])
+    ->where([
+        'service' => 'orders|payments|accounts', 
+        'path' => '.*'
+    ]);
