@@ -111,3 +111,18 @@ The services are configured with volume mounts for development, so changes to th
    curl http://localhost:8090/payments/api/health
    ```
 
+
+## check-list
+   ```bash
+   1-  octan swoole
+   2-  change Dockerfile for octan
+   3-  k6 stress test
+   4-  rate limit and config enable this and config count of rate limit
+   5-  logging middleware for all services and add uuid tracker in all logs in all services as unique key
+   6-  elk stack
+   7-  implement authentication
+   8-  implement circute breaker
+   9-  login with account and add check token in payment and order from header bearer
+   10- config with service needs authentication
+   11- saga pattern
+   ```
